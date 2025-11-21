@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Not Found - {{ task_id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .error-icon {
+            font-size: 4rem;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .task-id {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-icon">❌</div>
+        <h1>Task Not Found</h1>
+        <p>The automation task you're looking for could not be found.</p>
+        <div class="task-id">Task ID: {{ task_id }}</div>
+        <p>This could be because:</p>
+        <ul style="text-align: left; display: inline-block;">
+            <li>The task has completed and been cleaned up</li>
+            <li>The task ID is incorrect</li>
+            <li>The server was restarted</li>
+        </ul>
+        <div style="margin-top: 30px;">
+            <a href="/" class="btn">← Back to Home</a>
+            <a href="/api/get_all_tasks" class="btn">View All Tasks</a>
+        </div>
+    </div>
+</body>
+</html>

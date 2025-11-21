@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automation Status - {{ task_id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .task-id {
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        .btn-stop {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-stop:hover {
+            background: #c82333;
+        }
+        .btn-back {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-back:hover {
+            background: #545b62;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-running {
+            background: #28a745;
+            animation: pulse 1.5s infinite;
+        }
+        .status-stopped {
+            background: #dc3545;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+        .logs-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .log-entry {
+            margin-bottom: 2px;
+            line-height: 1.4;
+        }
+        .log-timestamp {
+            color: #569cd6;
+        }
+        .log-message {
+            color: #d4d4d4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Automation Status</h1>
+            <div class="task-id">Task ID: {{ task_id }}</div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-back" onclick="window.location.href='/'">← Back to Home</button>
+            <button class="btn btn-stop" onclick="stopAutomation()">🛑 Stop Automation</button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Status</h3>
+                <p id="status-display">
+                    <span class="status-indicator status-running" id="status-indicator"></span>
+                    <span id="status-text">Running</span>
+                </p>
+            </div>
+            <div class="stat-card">
+                <h3>Messages Sent</h3>
+                <p id="message-count">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Start Time</h3>
+                <p id="start-time">-</p>
+            </div>
+        </div>
+        
+        <h3>Live Logs</h3>
+        <div class="logs-container" id="logs-container">
+            Loading logs...
+        </div>
+    </div>
+
+    <script>
+        const taskId = '{{ task_id }}';
+        
+        function updateStatus() {
+            fetch(`/api/get_status/${taskId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update status
+                    const statusIndicator = document.getElementById('status-indicator');
+                    const statusText = document.getElementById('status-text');
+                    
+                    if (data.running) {
+                        statusIndicator.className = 'status-indicator status-running';
+                        statusText.textContent = 'Running';
+                    } else {
+                        statusIndicator.className = 'status-indicator status-stopped';
+                        statusText.textContent = 'Stopped';
+                    }
+                    
+                    // Update message count
+                    document.getElementById('message-count').textContent = data.message_count;
+                    
+                    // Update start time
+                    if (data.start_time) {
+                        const startTime = new Date(data.start_time * 1000).toLocaleString();
+                        document.getElementById('start-time').textContent = startTime;
+                    }
+                    
+                    // Update logs
+                    const logsContainer = document.getElementById('logs-container');
+                    if (data.logs && data.logs.length > 0) {
+                        logsContainer.innerHTML = data.logs.map(log => 
+                            `<div class="log-entry">${log}</div>`
+                        ).join('');
+                        logsContainer.scrollTop = logsContainer.scrollHeight;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching status:', error);
+                });
+        }
+        
+        function stopAutomation() {
+            if (confirm('Are you sure you want to stop this automation task?')) {
+                fetch(`/api/stop_automation/${taskId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    updateStatus();
+                })
+                .catch(error => {
+                    console.error('Error stopping automation:', error);
+                    alert('Error stopping automation');
+                });
+            }
+        }
+        
+        // Update status every 2 seconds
+        setInterval(updateStatus, 2000);
+        
+        // Initial update
+        updateStatus();
+    </script>
+</body>
+</html>

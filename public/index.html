@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Message Automation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .card-header {
+            background: #4a5568;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card-header h2 {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-container {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #feb2b2;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .feature {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .feature h3 {
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+
+        .feature p {
+            color: #718096;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .card-body {
+                padding: 20px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Facebook Message Automation</h1>
+            <p>Automate your Facebook messaging with ease and efficiency</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Automation Configuration</h2>
+            </div>
+            <div class="card-body">
+                <div id="alert-success" class="alert alert-success"></div>
+                <div id="alert-error" class="alert alert-error"></div>
+
+                <form id="automation-form">
+                    <div class="form-group">
+                        <label for="chat_id">Chat ID / Thread ID</label>
+                        <input type="text" id="chat_id" name="chat_id" class="form-control" 
+                               placeholder="Enter Facebook chat/thread ID">
+                        <div class="form-help">
+                            The ID from the Facebook messenger URL (messages/t/THREAD_ID)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name_prefix">Name Prefix (Optional)</label>
+                        <input type="text" id="name_prefix" name="name_prefix" class="form-control" 
+                               placeholder="e.g., John">
+                        <div class="form-help">
+                            Prefix to add before each message (e.g., "John: Hello" instead of just "Hello")
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="delay">Delay Between Messages (Seconds)</label>
+                        <input type="number" id="delay" name="delay" class="form-control" 
+                               value="30" min="5" max="300">
+                        <div class="form-help">
+                            Time to wait between sending messages (minimum 5 seconds)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cookies">Facebook Cookies</label>
+                        <textarea id="cookies" name="cookies" class="form-control" 
+                                  placeholder="Paste your Facebook cookies here (name=value; name2=value2;)"></textarea>
+                        <div class="form-help">
+                            Your Facebook authentication cookies to maintain login session
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="messages">Messages to Send (One per line)</label>
+                        <textarea id="messages" name="messages" class="form-control" 
+                                  placeholder="Hello!&#10;How are you?&#10;This is an automated message."></textarea>
+                        <div class="form-help">
+                            Each line will be sent as a separate message. They will be rotated if automation runs for a long time.
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn">
+                        Start Automation
+                    </button>
+                </form>
+
+                <div id="status-container" class="status-container">
+                    <div class="spinner"></div>
+                    <h3>Starting Automation...</h3>
+                    <p>Please wait while we set up your automation task.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🚀</div>
+                <h3>Easy Setup</h3>
+                <p>Simple configuration with clear instructions for each parameter</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure</h3>
+                <p>Your cookies and data are handled securely in the automation process</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3>Real-time Monitoring</h3>
+                <p>Monitor your automation progress with live logs and status updates</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⏱️</div>
+                <h3>Flexible Timing</h3>
+                <p>Customizable delays between messages to avoid detection</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('automation-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form elements
+            const submitBtn = document.getElementById('submit-btn');
+            const statusContainer = document.getElementById('status-container');
+            const alertSuccess = document.getElementById('alert-success');
+            const alertError = document.getElementById('alert-error');
+            
+            // Hide previous alerts
+            alertSuccess.style.display = 'none';
+            alertError.style.display = 'none';
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Starting...';
+            statusContainer.style.display = 'block';
+            
+            // Submit form data
+            fetch('/start_automation', {
+                method: 'POST',
+                body: new FormData(this)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'started') {
+                    // Success - redirect to status page
+                    window.location.href = `/status/${data.task_id}`;
+                } else {
+                    // Show error
+                    alertError.textContent = 'Error: ' + (data.message || 'Unknown error occurred');
+                    alertError.style.display = 'block';
+                    
+                    // Reset form state
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Start Automation';
+                    statusContainer.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+                // Show error message
+                alertError.textContent = 'Error starting automation: ' + error.message;
+                alertError.style.display = 'block';
+                
+                // Reset form state
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Start Automation';
+                statusContainer.style.display = 'none';
+            });
+        });
+
+        // Form validation
+        const form = document.getElementById('automation-form');
+        const cookiesField = document.getElementById('cookies');
+        const messagesField = document.getElementById('messages');
+        
+        form.addEventListener('input', function() {
+            const submitBtn = document.getElementById('submit-btn');
+            const hasCookies = cookiesField.value.trim().length > 0;
+            const hasMessages = messagesField.value.trim().length > 0;
+            
+            // Enable button only if required fields are filled
+            submitBtn.disabled = !hasCookies || !hasMessages;
+        });
+
+        // Initial validation
+        const event = new Event('input');
+        form.dispatchEvent(event);
+    </script>
+</body>
+</html>
