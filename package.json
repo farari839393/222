@@ -1,0 +1,14 @@
+{
+  "name": "facebook-automation",
+  "version": "1.0.0",
+  "description": "Facebook message automation with Express and Puppeteer",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "puppeteer": "^21.0.0",
+    "uuid": "^9.0.0"
+  }
+}
